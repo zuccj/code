@@ -1,0 +1,134 @@
+/*
+Project 1
+CS 229
+Fowler*/
+
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+
+#define k 1.486
+
+
+int main()
+{
+/*Define variables:
+    Dq is desired flow of water
+    q is flow of water
+    n is the roughness coefficient
+    a is the area cross-section and desired depth
+    r is hydraulic radius
+    s is the slope
+    Md is the maximum depth
+    d is desired depth of water
+    w is width of channel
+    e is the percent error
+    bd
+    count is used to limit number of guesses*/
+
+    double Dq,q,n,a,r,s,Md,d,w,e,count,best,bd,qtest,rtest,atest,et;
+
+            count=2;
+            best=100000;
+
+    printf("Channel Flow Calculator\n"
+           "-----------------------\n"
+           "Enter the desired flow:\n");
+    scanf("%lf",&Dq);
+    printf("enter the maximum depth:\n");
+    scanf("%lf",&Md);
+    printf("Enter the width:\n");
+    scanf("%lf",&w);
+    printf("Enter the roughness coefficient:\n");
+    scanf("%lf",&n);
+    printf("Enter the slope:\n");
+    scanf("%lf",&s);
+
+    rtest=Md*(w/(2*Md+w));
+    atest=Md*w;
+    qtest=(k/n)*atest*(pow(rtest,(.666667)))*(pow(s,(.5)));
+
+ if (qtest<Dq){
+        printf("The desired flow cannot be met with this channel.\n"
+               "Please try again with a lower desired flow.\n"
+               "Good bye");
+
+               return 0;
+    }
+
+
+
+    printf("\nAttempt #1\n"
+           "----------\n"
+           "Enter the desired depth:\n");
+    scanf("%lf",&d);
+    r=d*(w/(2*d+w));
+    a=d*w;
+
+    q=(k/n)*a*(pow(r,(.666667)))*(pow(s,(.5)));
+
+    e=(((Dq-q)/Dq)*100);
+
+ if (d>Md){
+        et=(((Dq-qtest)/Dq)*100);
+            printf("\nYou entered a depth greater than the max."
+                   " Desired depth set to %0.2f.\n"
+                   "At a depth of %0.2f feet, the flow is %0.2f cubic"
+                   "feet per second.\n Difference: %0.2f, Error: %0.2f percent" ,Md,Md,qtest,Dq-qtest,et);
+                   return 0;
+        }
+
+
+    printf("At a depth of %0.1f feet, the flow is %0.2f"
+           " cubic feet per second.\n"
+           "Difference: %0.2f. Error: %0.2f percent",d,q,Dq-q,e);
+
+        if (fabs(e)<=1){
+            printf("\nSuccess!");
+        }
+
+
+
+    while (fabs(e)>1 && count<5) {
+
+      printf("\n\nAttempt #%0.0f\n"
+             "----------\n"
+             "Enter the desired depth:\n",count++);
+      scanf("%lf",&d);
+
+    r=d*(w/(2*d+w));
+    a=d*w;
+    q=(k/n)*a*(pow(r,(.666667)))*(pow(s,(.5)));
+    e=(((Dq-q)/Dq)*100);
+
+    printf("At a depth of %0.1f feet, the flow is %0.2f"
+           " cubic feet per second.\n"
+           "Difference: %0.2f. Error: %0.2f percent",d,q,Dq-q,e);
+
+        if (fabs(e)<best){
+            best=e;
+            bd=d;
+        }
+
+
+        if (fabs(e)<=1){
+            printf("\nSuccess!");
+        }
+        if (d>Md){
+            printf("\nYou entered a depth greater than the max."
+                   " Desired depth set to %0.2f.",Md);
+        }
+
+        if (count>=5 && fabs(e)>1){
+            printf("\n\nYour best value was %0.2f, with a depth of %0.2f",best,bd);
+
+        }
+
+
+    }
+
+
+
+    return 0;
+}
