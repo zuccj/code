@@ -1,0 +1,83 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+double DoSimulation(double input_1);
+double DoAnalysis(int input_2);
+
+double DoSimulation(double input_1){
+    double avg_speed, gust, speed;
+    int count;
+    FILE *sim_out;
+
+        printf("Enter average wind speed\n");
+        scanf("%lf", &avg_speed);
+        printf("Enter expected gust\n");
+        scanf("%lf", &gust);
+
+        if (avg_speed < 0 || gust < 0){
+            printf("Invalid inputs\n");
+            return 0;
+        }
+        if (avg_speed > 30 || gust > 10){
+            printf("Invalid inputs\n");
+            return 0;
+        }
+        if (gust>avg_speed){
+            printf("Gust cannot be higher than average speed");
+            return 0;
+        }
+        count=0;
+        /*printf("\n%f\n", avg_speed);*/
+         sim_out=fopen("winds.txt","w");
+                if (sim_out == NULL){
+                    printf("Error creating winds file\n");
+                }
+    while (count<= 3600){
+
+        if (count %10==0){
+           speed = (double)rand()/RAND_MAX*(((avg_speed+gust)-(avg_speed-gust))+(avg_speed-gust));
+            /*printf("%i %lf\n", count, speed);*/
+            fprintf(sim_out, "%lf\n%i. %lf\n", avg_speed, count, speed);
+             count++;
+            }
+            else{
+                count++;}
+            fclose(sim_out);
+    }
+
+
+    }
+
+
+int main()
+{
+    int input_selected;
+
+
+
+
+    printf("Flight Simulator and Analysis\n"
+           "-----------------------------\n"
+           "1. Do Simulation\n"
+           "2. Do Analysis\n"
+           "3. Exit\n");
+
+    scanf("%i", &input_selected);
+
+    if (input_selected > 3){
+        printf("You have entered an invalid selection\n");
+        return 0;
+    }
+
+    if(input_selected == 1){
+            DoSimulation(input_selected);
+    }
+
+    if(input_selected == 2){
+        printf("end");
+        return 0;
+    }
+
+
+    return 0;
+}
