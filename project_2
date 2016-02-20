@@ -1,0 +1,231 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <limits.h>
+
+double avg_speed, gust;
+
+int DoSimulation(int input_1);
+int DoAnalysis(int input_2);
+int DoExit(int input_3);
+int storm_detect(int storm_speed);
+
+int DoSimulation(int input_1){
+    double speed, storm, storm_wind, storm_length, storm_speed, storm_time;
+    int count;
+    FILE *sim_out;
+    FILE *speeds;
+
+        printf("Enter average wind speed\n");
+        scanf("%lf", &avg_speed);
+        printf("Enter expected gust\n");
+        scanf("%lf", &gust);
+
+        if (avg_speed < 0 || gust < 0){
+            printf("Invalid inputs\n");
+            return 0;
+        }
+        if (avg_speed > 30 || gust > 10){
+            printf("Invalid inputs\n");
+            return 0;
+        }
+        if (gust>avg_speed){
+            printf("Gust cannot be higher than average speed");
+            return 0;
+        }
+
+         sim_out=fopen("winds.txt","w");
+                if (sim_out == NULL){
+                    printf("Error creating winds file\n");
+                    return 1;
+                }
+
+                speeds = fopen("speeds.txt","w");
+                if(speeds == NULL){
+                    printf("Error creating speeds file\n");
+                    return 1;
+                }
+
+    else{
+        count=0;
+        fprintf(sim_out, "%lf\n", avg_speed);
+
+    while (count<= 3600){
+            speed = (double)rand()/RAND_MAX*((avg_speed+gust)-(avg_speed-gust))+(avg_speed-gust);
+            storm = (double)rand()/RAND_MAX;
+
+            if(storm > 0.0005){
+
+                if(count %10==0){
+                fprintf(sim_out, "%i. %lf\n", count, speed);
+                fprintf(speeds, "%lf\n", speed);
+                count++;
+                }
+
+                else{
+                     count++;}
+            }
+
+            else if(storm <= 0.0005){
+                storm_length = (double)rand()/RAND_MAX*(300-180)+180;
+                storm_time = count + storm_length;
+
+            while(storm_time >= count){
+                storm_wind = (double)rand()/RAND_MAX*(30-20)+20;
+                speed = (double)rand()/RAND_MAX*((avg_speed+gust)-(avg_speed-gust))+(avg_speed-gust);
+                storm_speed = speed + storm_wind;
+
+                if (count %10==0){
+                fprintf(sim_out, "%i. %lf\n", count, storm_speed);
+                fprintf(speeds, "%lf\n", storm_speed);
+                count++;
+                  }
+
+                else{
+                    count++;
+                    }
+                }
+            }
+        }
+        printf("\n***Simulation Complete***\n\n");
+
+    }
+   fclose(sim_out);
+   fclose(speeds);
+}
+
+
+
+
+int storm_detect(int storm_speed){
+    FILE *in_speed;
+    double input_speed;
+    int counters;
+
+      in_speed = fopen("speeds.txt","r");
+     printf("%lf gust, %lf avg_s\n", gust, avg_speed);
+    if (in_speed == NULL){
+        printf("Error opening winds file\n");
+        return 1;
+    }
+
+    while(!feof(in_speed)){
+                counters++;
+                fscanf(in_speed, "%lf", &input_speed);
+
+
+                while (input_speed > (input_speed+gust)){
+                    printf("%i", counters);
+                }
+    }
+    fclose(in_speed);
+}
+
+
+
+int DoAnalysis(int input_2){
+    FILE *input_analysis;
+    FILE *analysis;
+    double max_speed, speed_sum, input_speed;
+    int counter;
+
+    input_analysis = fopen("speeds.txt","r");
+
+    if (input_analysis == NULL){
+        printf("Error opening winds file\n");
+        return 1;
+    }
+
+    else{
+        max_speed = INT_MIN;
+        avg_speed = 0;
+        speed_sum = 0;
+        counter = 0;
+        input_speed=0;
+         printf("%lf g %lf av\n", gust, avg_speed);
+
+
+        while(!feof(input_analysis)){
+                counter++;
+                fscanf(input_analysis, "%lf", &input_speed);
+                speed_sum = input_speed + speed_sum;
+
+                if (max_speed <= input_speed){
+                max_speed = input_speed;
+                }
+
+                if (input_speed > (gust+avg_speed)){
+                    storm_detect(input_speed);
+                                    }
+
+            }
+
+            avg_speed = speed_sum/(counter-1);
+            printf("\nMaximum speed = %lf    Average speed = %lf\n\n",max_speed, avg_speed);
+
+                   }
+
+    fclose(input_analysis);
+
+
+
+    analysis=fopen("analysis.txt","w");
+
+    if (analysis == NULL){
+        printf("Error creating analysis file");
+        return 1;
+    }
+
+    else{
+         fprintf(analysis, "Maximum speed = %lf    Average speed = %lf\n", max_speed, avg_speed);
+    }
+
+    fclose(analysis);
+}
+
+
+
+int DoExit(input_3){
+    printf("\nGood Bye\n");
+    exit(0);
+}
+
+
+
+
+
+int main()
+{
+    int input_selected;
+
+    printf("Flight Simulator and Analysis\n"
+           "-----------------------------\n"
+           "1. Do Simulation\n"
+           "2. Do Analysis\n"
+           "3. Exit\n");
+
+    scanf("%i", &input_selected);
+
+    if (input_selected > 3){
+        printf("You have entered an invalid selection\n");
+        return 0;
+    }
+
+    else if(input_selected == 1){
+        DoSimulation(input_selected);
+        }
+
+    else if(input_selected == 2){
+        DoAnalysis(input_selected);
+        }
+
+    else if(input_selected == 3){
+        DoExit(input_selected);
+        }
+
+    else{
+        printf("Error");
+        return 2;
+    }
+
+    return main();
+}
