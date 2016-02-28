@@ -1,0 +1,23 @@
+ int size;
+
+    srand(time(NULL));
+
+    size = rand()%6+5;
+    printf("%i\n",size);
+
+    int array_1[size];
+    int k;
+        printf("Array 1\n");
+     for(k=0;k<size;k++){
+        array_1[k]=rand()%200+1;
+        printf("%i ",array_1[k]);
+    }
+
+
+    int array_2[size];
+    int j;
+        printf("\nArray 2\n");
+    for(j=1;j<size;j++){
+        array_2[j]=rand()%200+1;
+        printf("%i ",array_2[j]);
+    }
