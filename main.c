@@ -1,7 +1,3 @@
-/*Josh Zuccollo
-Project 3
-CS 229
-Fowler*/
 
 #include <stdio.h>
 #include <stdlib.h>
